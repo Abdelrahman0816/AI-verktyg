@@ -1,11 +1,434 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <title>Jag testar AI-verktyg</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV-Byggaren – Skapa ett professionellt CV gratis</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A08;
+  --s1: #141412;
+  --s2: #1E1E1B;
+  --border: #2E2E2B;
+  --text: #F2EFE8;
+  --muted: #7A7772;
+  --acc: #E8C547;
+  --acc-dim: #2E2800;
+  --green: #4ADE80;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; inset: 0 0 auto; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 3rem;
+  background: rgba(10,10,8,.95); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: center; gap: .6rem; }
+.logo-dot { width: 7px; height: 7px; background: var(--acc); border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100% { opacity:1 } 50% { opacity:.3 } }
+.nav-btn {
+  background: var(--acc); color: var(--bg);
+  padding: .45rem 1.2rem;
+  font-family: 'JetBrains Mono', monospace; font-size: .62rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  border: none; cursor: pointer; transition: opacity .2s; text-decoration: none;
+  display: inline-block;
+}
+.nav-btn:hover { opacity: .85; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 8rem 2rem 4rem;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 100% 70% at 50% -10%, rgba(232,197,71,.08) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 85% 90%, rgba(74,222,128,.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 70px 70px; opacity: .18;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 20%, transparent 80%);
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 1; max-width: 860px; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--acc-dim); border: 1px solid rgba(232,197,71,.25);
+  padding: .35rem 1rem;
+  font-family: 'JetBrains Mono', monospace; font-size: .6rem;
+  text-transform: uppercase; letter-spacing: .14em; color: var(--acc);
+  margin-bottom: 2.5rem;
+  animation: fadeUp .5s ease both;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(-12px) } to { opacity:1; transform:translateY(0) } }
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 800; line-height: .92; letter-spacing: -.04em;
+  margin-bottom: 1.5rem;
+  animation: fadeUp2 .6s ease .1s both;
+}
+h1 em { font-family: 'Instrument Serif', serif; font-weight: 400; font-style: italic; color: var(--acc); }
+@keyframes fadeUp2 { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:translateY(0) } }
+
+.hero-sub {
+  font-size: 1.1rem; color: var(--muted); line-height: 1.8;
+  max-width: 500px; margin: 0 auto 3rem;
+  animation: fadeUp2 .6s ease .2s both;
+}
+.hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeUp2 .6s ease .3s both; }
+
+.btn-primary {
+  background: var(--acc); color: var(--bg);
+  padding: 1rem 2.5rem;
+  font-family: 'Syne', sans-serif; font-size: .92rem; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  text-decoration: none; display: inline-block;
+}
+.btn-primary:hover { opacity: .88; transform: translateY(-2px); }
+
+.btn-secondary {
+  background: transparent; color: var(--text);
+  padding: 1rem 2.5rem;
+  font-family: 'Syne', sans-serif; font-size: .92rem; font-weight: 600;
+  border: 1px solid var(--border); cursor: pointer;
+  transition: all .2s; text-decoration: none; display: inline-block;
+}
+.btn-secondary:hover { border-color: var(--muted); }
+
+/* ── STATS ── */
+.hero-stats {
+  display: flex; gap: 4rem; justify-content: center;
+  margin-top: 5rem; flex-wrap: wrap;
+  animation: fadeUp2 .6s ease .4s both;
+}
+.stat-n { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; letter-spacing: -.04em; color: var(--acc); display: block; }
+.stat-l { font-family: 'JetBrains Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+
+/* ── HOW IT WORKS ── */
+#how { padding: 7rem 4rem; border-top: 1px solid var(--border); }
+.section-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .15em; color: var(--acc); display: flex; align-items: center; gap: .7rem; margin-bottom: 1rem; }
+.section-eyebrow::before { content: ''; width: 22px; height: 1px; background: var(--acc); }
+.section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 4rem; }
+.section-title em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: var(--acc); }
+
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.step { padding: 2rem; border: 1px solid var(--border); background: var(--s1); }
+.step-num {
+  font-family: 'JetBrains Mono', monospace; font-size: .6rem;
+  text-transform: uppercase; letter-spacing: .15em; color: var(--acc);
+  margin-bottom: 1.2rem; display: flex; align-items: center; gap: .8rem;
+}
+.step-num::before { content: attr(data-n); display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--acc-dim); border: 1px solid rgba(232,197,71,.3); color: var(--acc); font-weight: 700; border-radius: 50%; font-size: .7rem; }
+.step h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .6rem; }
+.step p { font-size: .85rem; color: var(--muted); line-height: 1.75; }
+
+/* ── TEMPLATE PREVIEW STRIP ── */
+#templates-strip { padding: 7rem 4rem; border-top: 1px solid var(--border); }
+.strip-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;
+  margin: 3rem 0 2.5rem;
+}
+.strip-card {
+  border: 1px solid var(--border); background: var(--s1);
+  overflow: hidden; cursor: pointer;
+  transition: border-color .2s, transform .2s;
+}
+.strip-card:hover { border-color: var(--acc); transform: translateY(-4px); }
+.strip-card-img {
+  height: 180px; background: white; overflow: hidden; position: relative;
+}
+/* Mini CV previews inside each card */
+.mini-cv { padding: .8rem; height: 100%; overflow: hidden; }
+.mini-name { height: 8px; background: #1b2a4a; border-radius: 2px; margin-bottom: 5px; width: 70%; }
+.mini-title { height: 5px; background: #e8f0f8; border-radius: 2px; margin-bottom: 10px; width: 50%; }
+.mini-line { height: 4px; background: #f0f0f0; border-radius: 2px; margin-bottom: 4px; }
+.mini-line.short { width: 60%; }
+.mini-line.shorter { width: 40%; }
+
+.strip-foot { padding: .7rem .8rem; background: var(--s2); border-top: 1px solid var(--border); }
+.strip-name { font-family: 'Syne', sans-serif; font-size: .72rem; font-weight: 700; }
+.strip-desc { font-family: 'JetBrains Mono', monospace; font-size: .52rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-top: .2rem; }
+
+.strip-cta { text-align: center; }
+.strip-count { font-family: 'JetBrains Mono', monospace; font-size: .62rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 1.5rem; }
+.strip-count span { color: var(--acc); font-weight: 700; }
+
+/* ── WHY US ── */
+#why { padding: 7rem 4rem; border-top: 1px solid var(--border); background: var(--s1); }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3rem; }
+.why-card { padding: 1.8rem; }
+.why-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
+.why-card h4 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .5rem; }
+.why-card p { font-size: .8rem; color: var(--muted); line-height: 1.7; }
+
+/* ── FINAL CTA ── */
+#final-cta {
+  padding: 8rem 4rem; text-align: center; border-top: 1px solid var(--border);
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(232,197,71,.05) 0%, transparent 60%);
+}
+#final-cta h2 { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 800; letter-spacing: -.04em; line-height: .95; margin-bottom: 1.5rem; }
+#final-cta h2 em { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: var(--acc); }
+#final-cta p { font-size: 1rem; color: var(--muted); margin-bottom: 3rem; }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+footer p { font-family: 'JetBrains Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  #how, #templates-strip, #why, #final-cta, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .steps, .why-grid { grid-template-columns: 1fr 1fr; }
+  .strip-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero-stats { gap: 2rem; }
+}
+@media (max-width: 560px) {
+  .steps, .why-grid { grid-template-columns: 1fr; }
+  .strip-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
 </head>
 <body>
-  <h1>Jag testar gratis AI-verktyg</h1>
-  <p>Ärliga tester av AI – utan hype.</p>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><div class="logo-dot"></div>CV-Byggaren</div>
+  <a class="nav-btn" href="cv-byggaren.html" target="_blank">Skapa CV gratis →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="badge">✦ 50 mallar · AI-drivet · 100% gratis</div>
+    <h1>Skapa ett <em>perfekt</em><br>CV som sticker ut</h1>
+    <p class="hero-sub">Välj bland 50 professionella mallar designade för svenska arbetsgivare. AI skriver texten – du laddar ner PDF på minuter.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="cv-byggaren.html" target="_blank">Se alla 50 mallar →</a>
+      <a class="btn-secondary" href="#how">Hur det fungerar</a>
+    </div>
+    <div class="hero-stats">
+      <div><span class="stat-n">50</span><span class="stat-l">Unika mallar</span></div>
+      <div><span class="stat-n">AI</span><span class="stat-l">Skriver texten</span></div>
+      <div><span class="stat-n">0 kr</span><span class="stat-l">Alltid gratis</span></div>
+      <div><span class="stat-n">5 min</span><span class="stat-l">Klart CV</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-eyebrow">Hur det fungerar</div>
+  <div class="section-title">Tre enkla <em>steg</em></div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num" data-n="1">Välj din mall</div>
+      <h3>50 professionella mallar</h3>
+      <p>Bläddra bland 50 mallar i 10 unika layouter och 5 färgteman. Filtrera efter stil – klassisk, modern eller kreativ.</p>
+    </div>
+    <div class="step">
+      <div class="step-num" data-n="2">Fyll i dina uppgifter</div>
+      <h3>AI skriver åt dig</h3>
+      <p>Berätta kort om dig själv och dina jobb. AI förvandlar din text till professionella CV-meningar på svenska.</p>
+    </div>
+    <div class="step">
+      <div class="step-num" data-n="3">Ladda ner PDF</div>
+      <h3>Klart att skicka iväg</h3>
+      <p>Förhandsgranska ditt CV, byt mall med ett klick om du vill, och ladda ner som PDF – helt gratis, ingen registrering.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPLATE STRIP -->
+<section id="templates-strip">
+  <div class="section-eyebrow">Mallgalleriet</div>
+  <div class="section-title">10 layouter × 5 färger = <em>50 mallar</em></div>
+
+  <div class="strip-grid">
+    <!-- Kronos Navy -->
+    <div class="strip-card" onclick="window.open('cv-byggaren.html','_blank')">
+      <div class="strip-card-img">
+        <div style="background:white;height:100%;padding:.8rem;font-family:sans-serif;overflow:hidden">
+          <div style="border-bottom:2px solid #1b2a4a;padding-bottom:.5rem;margin-bottom:.5rem">
+            <div style="font-size:.85rem;font-weight:700;color:#1b2a4a">Anna Lindqvist</div>
+            <div style="font-size:.45rem;color:#4a7fc1;margin:.1rem 0 .3rem">Marknadskoordinator</div>
+            <div style="font-size:.38rem;color:#555">📧 anna@email.se · 📍 Stockholm</div>
+          </div>
+          <div style="font-size:.32rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#4a7fc1;border-bottom:1px solid #e8f0f8;padding-bottom:.2rem;margin-bottom:.3rem">Profil</div>
+          <div style="font-size:.38rem;color:#333;line-height:1.4;margin-bottom:.4rem">Engagerad marknadsförare med 3 års erfarenhet av digital kommunikation.</div>
+          <div style="font-size:.32rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#4a7fc1;border-bottom:1px solid #e8f0f8;padding-bottom:.2rem;margin-bottom:.3rem">Erfarenhet</div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:.4rem;font-weight:700;color:#1b2a4a">Marknadskoordinator</span><span style="font-size:.32rem;color:#888">2022–Nu</span></div>
+          <div style="font-size:.35rem;color:#666">Företag AB · Stockholm</div>
+        </div>
+      </div>
+      <div class="strip-foot"><div class="strip-name">Kronos</div><div class="strip-desc">Klassisk · Navy</div></div>
+    </div>
+
+    <!-- Sigma Forest -->
+    <div class="strip-card" onclick="window.open('cv-byggaren.html','_blank')">
+      <div class="strip-card-img">
+        <div style="display:grid;grid-template-columns:55px 1fr;height:100%;font-family:sans-serif">
+          <div style="background:#1a3a2e;padding:.6rem .5rem;overflow:hidden">
+            <div style="font-size:.55rem;font-weight:700;color:white;line-height:1.1;margin-bottom:.2rem">Anna<br>Lindqvist</div>
+            <div style="font-size:.3rem;color:#4a9e7a;margin-bottom:.6rem">Koordinator</div>
+            <div style="font-size:.26rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:.3rem;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.15rem">Kontakt</div>
+            <div style="font-size:.3rem;color:rgba(255,255,255,.75);margin-bottom:.15rem">anna@email.se</div>
+            <div style="font-size:.3rem;color:rgba(255,255,255,.75);margin-bottom:.5rem">Stockholm</div>
+            <div style="font-size:.26rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:.3rem;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.15rem">Skills</div>
+            <div style="font-size:.3rem;color:white;margin-bottom:.12rem">Adobe Suite</div>
+            <div style="height:2px;background:rgba(255,255,255,.15);border-radius:1px;margin-bottom:.3rem"><div style="width:85%;height:100%;background:#4a9e7a;border-radius:1px"></div></div>
+            <div style="font-size:.3rem;color:white;margin-bottom:.12rem">Google Ads</div>
+            <div style="height:2px;background:rgba(255,255,255,.15);border-radius:1px"><div style="width:70%;height:100%;background:#4a9e7a;border-radius:1px"></div></div>
+          </div>
+          <div style="padding:.6rem .5rem;background:white;overflow:hidden">
+            <div style="font-size:.28rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#1a3a2e;border-bottom:2px solid #1a3a2e;padding-bottom:.15rem;margin-bottom:.35rem">Profil</div>
+            <div style="font-size:.35rem;color:#333;line-height:1.4;margin-bottom:.5rem">Engagerad marknadsförare med gedigen erfarenhet av digital kommunikation.</div>
+            <div style="font-size:.28rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#1a3a2e;border-bottom:2px solid #1a3a2e;padding-bottom:.15rem;margin-bottom:.35rem">Erfarenhet</div>
+            <div style="display:flex;justify-content:space-between"><span style="font-size:.35rem;font-weight:700">Marknadskoordinator</span><span style="font-size:.28rem;color:#4a9e7a;font-weight:600">2022–Nu</span></div>
+            <div style="font-size:.3rem;color:#666">Företag AB</div>
+          </div>
+        </div>
+      </div>
+      <div class="strip-foot"><div class="strip-name">Sigma</div><div class="strip-desc">Modern · Skogsgrönt</div></div>
+    </div>
+
+    <!-- Aurum Burgundy -->
+    <div class="strip-card" onclick="window.open('cv-byggaren.html','_blank')">
+      <div class="strip-card-img">
+        <div style="background:white;padding:.8rem;font-family:Georgia,serif;overflow:hidden;height:100%">
+          <div style="text-align:center;border-bottom:1px solid #c44060;padding-bottom:.5rem;margin-bottom:.5rem">
+            <div style="font-size:.9rem;font-weight:700;letter-spacing:.04em;color:#4a1020">Anna Lindqvist</div>
+            <div style="font-size:.4rem;color:#c44060;font-style:italic;margin:.15rem 0 .3rem">Marknadskoordinator</div>
+            <div style="font-size:.32rem;color:#666;font-family:sans-serif">anna@email.se · Stockholm</div>
+          </div>
+          <div style="font-size:.3rem;text-transform:uppercase;letter-spacing:.2em;color:#c44060;text-align:center;font-family:sans-serif;margin-bottom:.15rem">Profil</div>
+          <div style="width:24px;height:1px;background:#c44060;margin:.2rem auto .35rem"></div>
+          <div style="font-size:.36rem;line-height:1.5;color:#333;text-align:center;font-style:italic;margin-bottom:.5rem">Passionerad marknadsförare med ett skarpt öga för estetik och strategi.</div>
+          <div style="font-size:.3rem;text-transform:uppercase;letter-spacing:.2em;color:#c44060;text-align:center;font-family:sans-serif;margin-bottom:.15rem">Erfarenhet</div>
+          <div style="width:24px;height:1px;background:#c44060;margin:.2rem auto .35rem"></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:.38rem;font-weight:700;color:#4a1020">Marknadskoordinator</span><span style="font-size:.3rem;color:#c44060;font-style:italic;font-family:sans-serif">2022–Nu</span></div>
+        </div>
+      </div>
+      <div class="strip-foot"><div class="strip-name">Aurum</div><div class="strip-desc">Elegant · Burgundy</div></div>
+    </div>
+
+    <!-- Motion Charcoal -->
+    <div class="strip-card" onclick="window.open('cv-byggaren.html','_blank')">
+      <div class="strip-card-img">
+        <div style="background:#1a1a1a;height:100%;padding:.8rem;font-family:sans-serif;overflow:hidden">
+          <div style="border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.5rem;margin-bottom:.5rem">
+            <div style="font-size:.9rem;font-weight:800;color:white;letter-spacing:-.03em;line-height:1">ANNA<br>LINDQVIST</div>
+            <div style="font-size:.35rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.4);margin:.3rem 0 .4rem">Marknadskoordinator</div>
+            <div style="font-size:.32rem;color:rgba(255,255,255,.5)">anna@email.se · Stockholm</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 45px;gap:.4rem">
+            <div>
+              <div style="font-size:.28rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.35);margin-bottom:.3rem">Profil</div>
+              <div style="font-size:.34rem;color:rgba(255,255,255,.75);line-height:1.4">Driven marknadsförare med passion för digital kommunikation.</div>
+            </div>
+            <div>
+              <div style="font-size:.28rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:.3rem">Skills</div>
+              <div style="background:rgba(255,255,255,.1);padding:.15rem .3rem;font-size:.28rem;color:white;margin-bottom:.15rem">Adobe</div>
+              <div style="background:rgba(255,255,255,.1);padding:.15rem .3rem;font-size:.28rem;color:white;margin-bottom:.15rem">SEO</div>
+              <div style="background:rgba(255,255,255,.1);padding:.15rem .3rem;font-size:.28rem;color:white">Ads</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="strip-foot"><div class="strip-name">Motion</div><div class="strip-desc">Kreativ · Antracit</div></div>
+    </div>
+
+    <!-- Void Slate -->
+    <div class="strip-card" onclick="window.open('cv-byggaren.html','_blank')">
+      <div class="strip-card-img">
+        <div style="background:white;padding:.9rem;font-family:sans-serif;overflow:hidden;height:100%">
+          <div style="margin-bottom:.7rem">
+            <div style="font-size:.85rem;font-weight:300;letter-spacing:-.01em;line-height:1"><strong style="font-weight:700;color:#2a3545">Anna</strong> Lindqvist</div>
+            <div style="font-size:.35rem;text-transform:uppercase;letter-spacing:.18em;color:#bbb;margin:.25rem 0 .4rem">Marknadskoordinator</div>
+            <div style="font-size:.32rem;color:#777">anna@email.se · Stockholm</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 50px;gap:.6rem">
+            <div>
+              <div style="font-size:.26rem;text-transform:uppercase;letter-spacing:.18em;color:#ccc;margin-bottom:.2rem">Profil</div>
+              <div style="width:12px;height:1px;background:#2a3545;margin-bottom:.35rem"></div>
+              <div style="font-size:.34rem;color:#333;line-height:1.5">Driven marknadsförare med passion för digital kommunikation.</div>
+            </div>
+            <div>
+              <div style="font-size:.26rem;text-transform:uppercase;letter-spacing:.15em;color:#ccc;margin-bottom:.3rem">Skills</div>
+              <div style="font-size:.3rem;color:#444;padding:.18rem 0;border-bottom:1px solid #f0f0f0">Adobe</div>
+              <div style="font-size:.3rem;color:#444;padding:.18rem 0;border-bottom:1px solid #f0f0f0">Google Ads</div>
+              <div style="font-size:.3rem;color:#444;padding:.18rem 0">SEO</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="strip-foot"><div class="strip-name">Void</div><div class="strip-desc">Minimalist · Skiffer</div></div>
+    </div>
+  </div>
+
+  <div class="strip-cta">
+    <p class="strip-count">Visar 5 av <span>50 mallar</span> – se alla i mallgalleriet</p>
+    <a class="btn-primary" href="cv-byggaren.html" target="_blank">Se alla 50 mallar →</a>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="section-eyebrow">Varför CV-Byggaren</div>
+  <div class="section-title">Byggt för <em>dig</em></div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="why-icon">🎨</span>
+      <h4>50 professionella mallar</h4>
+      <p>10 unika layouter i 5 färgteman – klassiska, moderna och kreativa stilar för alla branscher.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">✦</span>
+      <h4>AI skriver texten</h4>
+      <p>Berätta kort om dig och låt AI förvandla det till professionell svenska anpassad för svenska arbetsgivare.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">⚡</span>
+      <h4>Klart på 5 minuter</h4>
+      <p>Inga krångliga inloggningar eller betalväggar. Välj mall, fyll i, ladda ner PDF – så enkelt är det.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">🔒</span>
+      <h4>Helt gratis &amp; privat</h4>
+      <p>Ingen registrering, inga abonnemang. Din data lagras inte – allt sker i din webbläsare.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="final-cta">
+  <h2>Ditt nya CV<br>väntar på dig <em>nu</em></h2>
+  <p>Gratis alltid · 50 mallar · AI-drivet · PDF-nedladdning</p>
+  <a class="btn-primary" href="cv-byggaren.html" target="_blank" style="font-size:1rem;padding:1.1rem 3rem">Skapa mitt CV gratis →</a>
+</section>
+
+<footer>
+  <p>© 2025 CV-Byggaren – Alltid 100% gratis</p>
+  <p>Byggt för svenska jobbsökare</p>
+</footer>
+
 </body>
 </html>
